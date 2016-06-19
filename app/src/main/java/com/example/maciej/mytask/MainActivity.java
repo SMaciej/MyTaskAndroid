@@ -24,13 +24,22 @@ package com.example.maciej.mytask;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -46,9 +55,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
     private final int ADD_TASK_REQUEST = 1;
+    private final int MODIFY_TASK_REQUEST = 2;
     private final String PREFS_TASKS = "prefs_tasks";
     private final String KEY_NAME_LIST = "name";
     private final String KEY_DESCRIPTION_LIST = "description";
@@ -73,6 +83,11 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_main);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+
+        createNotification();
 
         mDateTimeTextView = (TextView) findViewById(R.id.dateTimeTextView);
 //      final Button addTaskBtn = (Button) findViewById(R.id.addTaskBtn);
@@ -110,9 +125,9 @@ public class MainActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 CheckedTextView item = (CheckedTextView) view;
                 if (item.isChecked()) {
-                    Toast.makeText(getApplicationContext(), "checked", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.checked), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "unchecked", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.unchecked), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -133,6 +148,24 @@ public class MainActivity extends Activity {
                 }
             }
         };
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.add:
+                addTaskClicked();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     @Override
@@ -183,7 +216,29 @@ public class MainActivity extends Activity {
                 .putString(KEY_DATE_LIST, savedDateList.toString()).commit();
     }
 
-    public void addTaskClicked(View view) {
+    public void createNotification() {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.add)
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText(getString(R.string.notification_desc));
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(12, mBuilder.build());
+    }
+
+    public void addTaskClicked() {
         Intent intent = new Intent(MainActivity.this, NewTaskActivity.class);
         startActivityForResult(intent, ADD_TASK_REQUEST);
     }
@@ -191,15 +246,22 @@ public class MainActivity extends Activity {
     public void descriptionClicked(View view) {
         CheckedTextView item = (CheckedTextView) view;
         String item_name = item.getText().toString();
-        String item_description = mDescriptionList.get(mNameList.indexOf(item_name));
-        String item_date = mDateList.get(mNameList.indexOf(item_name));
+        int index = mNameList.indexOf(item_name);
+        String item_description = mDescriptionList.get(index);
+        String item_date = mDateList.get(index);
         Intent intent = new Intent(MainActivity.this, DescriptionActivity.class);
         Bundle extras = new Bundle();
         extras.putString(EXTRA_TASK_NAME, item_name);
         extras.putString(EXTRA_TASK_DESCRIPTION, item_description);
         extras.putString(EXTRA_TASK_DATE, item_date);
         intent.putExtras(extras);
-        startActivity(intent);
+        startActivityForResult(intent, MODIFY_TASK_REQUEST);
+    }
+
+    public void deleteItem(int index) {
+        mNameList.remove(index);
+        mDescriptionList.remove(index);
+        mDateList.remove(index);
     }
 
     private static String getCurrentTimeStamp() {
@@ -222,28 +284,25 @@ public class MainActivity extends Activity {
                 mAdapter.notifyDataSetChanged();
             }
         }
+        if (requestCode == MODIFY_TASK_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                String taskName = data.getStringExtra(DescriptionActivity.EXTRA_TASK_NAME);
+                String taskDescription = data.getStringExtra(DescriptionActivity.EXTRA_TASK_DESCRIPTION);
+                String taskDate = data.getStringExtra(DescriptionActivity.EXTRA_TASK_DATE);
+                String taskOldName = data.getStringExtra(DescriptionActivity.EXTRA_TASK_OLDNAME);
+                Boolean taskDelete = data.getBooleanExtra(DescriptionActivity.EXTRA_TASK_DELETE, false);
+                int index = mNameList.indexOf(taskOldName);
+                if (taskDelete == false) {
+                    mNameList.set(index, taskName);
+                    mDescriptionList.set(index, taskDescription);
+                    mDateList.set(index, taskDate);
+                    mAdapter.notifyDataSetChanged();
+                }
+                else {
+                    deleteItem(index);
+                }
+            }
+        }
     }
-
-//    private void taskSelected(final int position) {
-//        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-//        alertDialogBuilder.setTitle(R.string.alert_title);
-//
-//        alertDialogBuilder
-//                .setMessage(mList.get(position))
-//                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        mList.remove(position);
-//                        mAdapter.notifyDataSetChanged();
-//                    }
-//                })
-//                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        dialog.cancel();
-//                    }
-//                });
-//
-//        AlertDialog alertDialog = alertDialogBuilder.create();
-//        alertDialog.show();
-//    }
 
 }

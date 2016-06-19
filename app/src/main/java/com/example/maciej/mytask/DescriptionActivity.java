@@ -22,8 +22,11 @@ public class DescriptionActivity extends AppCompatActivity {
     public static final String EXTRA_TASK_NAME = "task_name";
     public static final String EXTRA_TASK_DESCRIPTION = "task_desc";
     public static final String EXTRA_TASK_DATE = "task_date";
+    public static final String EXTRA_TASK_OLDNAME = "task_oldname";
+    public static final String EXTRA_TASK_DELETE = "task_delete";
     public static final String NAME_EDIT = "name_edit";
     public static final String DESCRIPTION_EDIT = "description_edit";
+    public String oldTaskName;
 
     private TextView mNameView;
     private TextView mDescriptionView;
@@ -42,10 +45,9 @@ public class DescriptionActivity extends AppCompatActivity {
         mDateView = (TextView) findViewById(R.id.dateText);
 
         Intent intent = getIntent();
-        completeData(intent);
-
         setDateTimeField();
         dateFormatter = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+        completeData(intent);
 
         mNameView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,7 +87,7 @@ public class DescriptionActivity extends AppCompatActivity {
 
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("OK",
+                .setPositiveButton(getString(R.string.ok),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 if (field == NAME_EDIT) {
@@ -96,7 +98,7 @@ public class DescriptionActivity extends AppCompatActivity {
                                 }
                             }
                         })
-                .setNegativeButton("Cancel",
+                .setNegativeButton(getString(R.string.cancel),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
@@ -120,34 +122,50 @@ public class DescriptionActivity extends AppCompatActivity {
         },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
     }
 
+    public void completeData(Intent intent) {
+        String taskName = intent.getStringExtra(MainActivity.EXTRA_TASK_NAME);
+        String taskDescription = intent.getStringExtra(MainActivity.EXTRA_TASK_DESCRIPTION);
+        String taskDate = intent.getStringExtra(MainActivity.EXTRA_TASK_DATE);
+
+        oldTaskName = taskName;
+        mNameView.setText(taskName);
+        mDescriptionView.setText(taskDescription);
+        mDateView.setText(taskDate);
+    }
+
     public void doneClicked(View view) {
 
         String taskName = mNameView.getText().toString();
         String taskDescription = mDescriptionView.getText().toString();
+        String taskDate = mDateView.getText().toString();
 
         if (!taskName.isEmpty()) {
             Intent taskIntent = new Intent();
             Bundle extras = new Bundle();
             extras.putString(EXTRA_TASK_NAME, taskName);
             extras.putString(EXTRA_TASK_DESCRIPTION, taskDescription);
-            extras.putString(EXTRA_TASK_DATE, taskDescription);
+            extras.putString(EXTRA_TASK_DATE, taskDate);
+            extras.putString(EXTRA_TASK_OLDNAME, oldTaskName);
+            extras.putBoolean(EXTRA_TASK_DELETE, false);
             taskIntent.putExtras(extras);
             setResult(RESULT_OK, taskIntent);
             finish();
         } else {
-            Toast.makeText(getApplicationContext(), "input name", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.input_name), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void completeData(Intent intent) {
-        String taskName = intent.getStringExtra(MainActivity.EXTRA_TASK_NAME);
-        String taskDescription = intent.getStringExtra(MainActivity.EXTRA_TASK_DESCRIPTION);
-        String taskDate = intent.getStringExtra(MainActivity.EXTRA_TASK_DATE);
-
-        mNameView.setText(taskName);
-        mDescriptionView.setText(taskDescription);
-        mDateView.setText(taskDate);
+    public void deleteClicked(View view) {
+        Intent taskIntent = new Intent();
+        Bundle extras = new Bundle();
+        extras.putString(EXTRA_TASK_OLDNAME, oldTaskName);
+        extras.putBoolean(EXTRA_TASK_DELETE, true);
+        taskIntent.putExtras(extras);
+        setResult(RESULT_OK, taskIntent);
+        finish();
     }
+
+
 
 
 

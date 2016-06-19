@@ -90,7 +90,7 @@ public class NewTaskActivity extends AppCompatActivity implements View.OnClickLi
             setResult(RESULT_OK, taskIntent);
             finish();
         } else {
-            Toast.makeText(getApplicationContext(), "input name", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.input_name), Toast.LENGTH_SHORT).show();
         }
 
 

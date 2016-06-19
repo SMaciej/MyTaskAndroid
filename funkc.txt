@@ -1,0 +1,23 @@
+TextView
+Aktywności
+Intent
+Relative Layout
+Adapter
+ListView
+CheckedTextView
+LayoutInflator
+Dialogi
+Toasty
+Shared preferences
+Landscape
+ActionBar
+Notyfikacje
+
+
+
+
+Fragmenty
+AsyncTaski
+Wątki
+Pobieranie danych z sieci
+Navigation Drawer

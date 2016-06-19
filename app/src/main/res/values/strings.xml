@@ -1,11 +1,19 @@
 <resources>
     <string name="app_name">MyTask</string>
-    <string name="action_settings">Settings</string>
-    <string name="add_task">Add a task</string>
-    <string name="description">Enter task description:</string>
-    <string name="done">Done</string>
-    <string name="title_activity_task_description">TaskDescriptionActivity</string>
-    <string name="alert_title">Task</string>
-    <string name="delete">Delete</string>
-    <string name="cancel">Cancel</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="add_task">Dodaj zadanie:</string>
+    <string name="add">Dodaj</string>
+    <string name="title_activity_task_description">Opis zadania</string>
+    <string name="alert_title">Modyfikacja:</string>
+    <string name="delete">Usuń</string>
+    <string name="cancel">Anuluj</string>
+    <string name="ok">OK</string>
+    <string name="input_name">Musisz wprowadzić nazwę zadania.</string>
+    <string name="checked">Zaznaczone.</string>
+    <string name="unchecked">Odznaczone.</string>
+    <string name="notification_desc">Kliknij by przejść do aplikacji.</string>
+    <string name="name">Nazwa</string>
+    <string name="description">Opis</string>
+    <string name="date">Data</string>
+    <string name="task_description">Szczegóły zadania:</string>
 </resources>
