@@ -24,8 +24,8 @@
         android:layout_height="wrap_content"
         android:padding="20dp"
         android:onClick="doneClicked"
-        android:layout_marginTop="33dp"
-        android:layout_below="@+id/dateText"
+        android:layout_marginTop="27dp"
+        android:layout_below="@+id/instructionText"
         android:layout_alignRight="@+id/dateText"
         android:layout_alignEnd="@+id/dateText" />
 
@@ -64,8 +64,19 @@
         android:layout_height="wrap_content"
         android:padding="20dp"
         android:onClick="deleteClicked"
+        android:layout_alignBaseline="@+id/doneBtn"
         android:layout_alignBottom="@+id/doneBtn"
         android:layout_alignLeft="@+id/dateText"
         android:layout_alignStart="@+id/dateText" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/instruction"
+        android:id="@+id/instructionText"
+        android:textSize="11dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

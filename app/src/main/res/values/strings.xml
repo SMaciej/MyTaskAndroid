@@ -11,9 +11,10 @@
     <string name="input_name">Musisz wprowadzić nazwę zadania.</string>
     <string name="checked">Zaznaczone.</string>
     <string name="unchecked">Odznaczone.</string>
-    <string name="notification_desc">Kliknij by przejść do aplikacji.</string>
+    <string name="notification_desc">Dotknij by przejść do aplikacji.</string>
     <string name="name">Nazwa</string>
     <string name="description">Opis</string>
     <string name="date">Data</string>
     <string name="task_description">Szczegóły zadania:</string>
+    <string name="instruction">Dotknij element by zmienić</string>
 </resources>
